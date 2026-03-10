@@ -8,83 +8,74 @@ class Hashmap
     @map = []
   end
 
-  def hash(key)
+  def hash(key) # REWRITE!
     hash_code = 0
     prime_number = 31
     key.each_char {|char| hash_code = prime_number * hash_code + char.ord}
-    hash_code
+    hash_code % @capacity
   end
 
-  def index(hash_code)
-    return @map[@map.index(hash_code)]
+  def grow_hashmap
+    puts "Bananas!"
+  end
+
+  def shrink_hashmap
+    puts "Bananas!"
   end
 
   def set(key, value)
     hc = hash(key)
-    if @map.include?(hc)
-      if @map[index(hc)].key == key
-        @map[index(hc)].next_node = Node.new(key, value)
-      else
-        @map[index(hc)].value = value
-      end
+    if !@map[hc]
+      @map[hc] = Node.new(key, value)
     else
-      @map.push(hc)
-      @capacity = @capacity * 2 if @map.size > (@capacity * @load_factor)
-      @map[index(hc)] = Node.new(key, value) 
+      current = @map[hc]
+      until current.next_node == nil
+        current = current.next_node
+      end
+      current.next_node = Node.new(key, value)
     end
+    grow_hashmap if self.length > (@capacity * @load_factor)
   end
 
   def get(key)
     hc = hash(key)
-    return @map[index(hc)].value if @map.include?(hc)
+    return nil if !@map[hc]
+    return @map[hc].value if !@map[hc].next_node
+    current = @map[hc]
+    until current.next_node == nil || current.key == key
+      current = current.next_node
+    end
+    return current.value if current.key == key
     nil
   end
 
-  def has?(key)
-    return @map.include?(hash(key))
+  def has?(key) 
+    @map[hash(key)] ? true : false
   end
 
   def remove(key)
-    result = nil
     hc = hash(key)
-    if @map.include?(hc)
-      if @map[index(hc)].next_node == nil
-        result = @map[index(hc)].value
-        @map.delete_at(index(hc))
-      else
-        current = @map[index(hc)]
-        done = nil
-        until done
-          if current.key == key
-            result = current.value
-            @map[index(hc)] = current.next_node
-            done = true
-          else
-            done = true if current.next_node == nil
-            current = current.next_node
-          end
-        end
-      end
-    end
-    @capacity = @capacity/2 if @map.size < (@capacity * @load_factor)
-    result
-  end
-
-  def length
-    len = 0
-    @map.each do |node|
-      len += 1
-      if node.next_node != nil
-        done = nil
-        current = node.next_node
-        until done
-          len += 1
-          done = true if current.next_node == nil
+    return nil if !@map[hc]
+    result = nil
+    if !@map[hc].next_node && @map[hc].key == key
+      result = @map[hc].value  
+      @map[hc] = nil
+    else
+      current = @map[hc]
+      done = false
+      until done
+        done = true if current.next_node == nil
+        if current.next_node.key == key
+          result = current.next_node.value
+          current.next_node = current.next_node.next_node
+          done = true
+        else
           current = current.next_node
         end
       end
     end
-    return len
+    shrink_hashmap if self.length < (@capacity * @load_factor)
+    result
   end
 
   def clear
@@ -92,55 +83,44 @@ class Hashmap
     @capacity = 16
   end
 
-  def keys
-    array_of_keys = Array.new
+  def each_entry
     @map.each do |node|
-      array_of_keys << node.key
+      next if node == nil
+      yield(node.key, node.value)
       if node.next_node != nil
         done = nil
         current = node.next_node
         until done
-          array_of_keys << node.key
+          yield(current.key, current.value)
           done = true if current.next_node == nil
           current = current.next_node
         end
       end
     end
-    return array_of_keys
+    nil
+  end
+
+  def length
+    len = 0
+    self.each_entry {|key, val| len += 1}
+    len
+  end
+
+  def keys
+    result_array = []
+    self.each_entry {|key, val| result_array << key}
+    result_array
   end
 
   def values
-    array_of_values = Array.new
-    @map.each do |node|
-      array_of_values << node.value
-      if node.next_node != nil
-        done = nil
-        current = node.next_node
-        until done
-          array_of_values << node.value
-          done = true if current.next_node == nil
-          current = current.next_node
-        end
-      end
-    end
-    return array_of_values
+    result_array = []
+    self.each_entry {|key, val| result_array << val}
+    result_array
   end
 
   def entries
-    array_of_entries = Array.new
-    @map.each do |node|
-      array_of_entries << [node.key, node.value]
-      if node.next_node != nil
-        done = nil
-        current = node.next_node
-        until done
-          array_of_entries << [node.key, node.value]
-          done = true if current.next_node == nil
-          current = current.next_node
-        end
-      end
-    end
+    result_array = []
+    self.each_entry {|key, val| result_array << [key, val] }
+    result_array
   end
-
-
 end
