@@ -21,12 +21,12 @@ test.set('lion', 'golden')
 
 test.has?('apple')
 test.get('apple')
-test.keys
-# test.remove('jacket')
+# test.keys
+test.remove('jacket')
 # test.set('beaver', 'demid')
 # test.set('pumpkin', 'orange')
 # test.set('me', 'crappy programmer')
 # test.set('this hash', 'crappy code')
 # test.length
-# test.keys
+test.keys
 # puts test.capacity
