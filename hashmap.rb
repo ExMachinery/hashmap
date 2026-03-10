@@ -15,12 +15,16 @@ class Hashmap
     hash_code % @capacity
   end
 
-  def grow_hashmap
-    puts "Bananas!"
-  end
-
-  def shrink_hashmap
-    puts "Bananas!"
+  def resize_hashmap(instruction)
+    case instruction
+    when :grow then @capacity = @capacity * 2
+    when :shrink then @capacity = @capacity / 2
+    end
+    old_hashmap = @map.dup
+    @map = []
+    old_hashmap.each_entry do |key, val|
+      set(key, val)
+    end
   end
 
   def set(key, value)
@@ -42,7 +46,7 @@ class Hashmap
         end
       end
     end
-    grow_hashmap if self.length > (@capacity * @load_factor)
+    resize_hashmap(:grow) if self.length > (@capacity * @load_factor)
   end
 
   def get(key)
@@ -82,7 +86,7 @@ class Hashmap
         end
       end
     end
-    shrink_hashmap if self.length < (@capacity * @load_factor)
+    resize_hashmap(:shrink) if self.length < (@capacity * @load_factor)
     result
   end
 
