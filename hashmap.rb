@@ -8,7 +8,7 @@ class Hashmap
     @map = []
   end
 
-  def hash(key) # REWRITE!
+  def hash(key)
     hash_code = 0
     prime_number = 31
     key.each_char {|char| hash_code = prime_number * hash_code + char.ord}
@@ -29,10 +29,18 @@ class Hashmap
       @map[hc] = Node.new(key, value)
     else
       current = @map[hc]
-      until current.next_node == nil
-        current = current.next_node
+      done = nil
+      until done
+        if current.key == key
+          current.value = value
+          done = true
+        elsif current.next_node
+          current = current.next_node
+        else
+          current.next_node = Node.new(key, value)
+          done = true
+        end
       end
-      current.next_node = Node.new(key, value)
     end
     grow_hashmap if self.length > (@capacity * @load_factor)
   end
