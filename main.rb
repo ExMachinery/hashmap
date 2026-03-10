@@ -23,3 +23,10 @@ test.set('lion', 'golden')
 # test.get('apple')
 # test.keys
 test.remove('jacket')
+test.set('beaver', 'demid')
+test.set('pumpkin', 'orange')
+test.set('me', 'crappy programmer')
+test.set('this hash', 'crappy code')
+test.length
+test.keys
+puts test.capacity

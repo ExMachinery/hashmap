@@ -15,16 +15,15 @@ class Hashmap
     hash_code % @capacity
   end
 
-  def resize_hashmap(instruction)
+  def resize_hashmap(instruction) # Не работает
     case instruction
     when :grow then @capacity = @capacity * 2
     when :shrink then @capacity = @capacity / 2
     end
-    old_hashmap = @map.dup
+    new_map = []
+    self.each_entry {|key, val| new_map << [key, val]}
     @map = []
-    old_hashmap.each_entry do |key, val|
-      set(key, val)
-    end
+    new_map.each {|pair| set(pair[0], pair[1])}
   end
 
   def set(key, value)
@@ -71,17 +70,13 @@ class Hashmap
     return nil if !@map[hc]
 
     result = nil
-    if !@map[hc].next_node && @map[hc].key == key
-      result = @map[hc].value  
-      @map[hc] = nil
-    else
       current = @map[hc]
       done = false
       until done
         done = true if current.next_node == nil
         if current.key == key
           result = current.value
-          current = current.next_node
+          current.next_node ? current = current.next_node : current = nil
           done = true
         elsif current.next_node.key == key
           result = current.next_node.value
@@ -91,8 +86,7 @@ class Hashmap
           current = current.next_node
         end
       end
-    end
-    
+
     if shrink_signal
       resize_hashmap(:shrink) if self.length < shrink_signal
     end
