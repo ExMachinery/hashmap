@@ -14,11 +14,12 @@ test.set('jacket', 'blue')
 test.set('kite', 'pink')
 test.set('lion', 'golden')
 
-p test.keys
-p test.values
-p test.entries
-test.length
+# p test.keys
+# p test.values
+# p test.entries
+# test.length
 
-test.has?('apple')
-test.get('apple')
-test.remove('apple')
+# test.has?('apple')
+# test.get('apple')
+# test.keys
+test.remove('jacket')

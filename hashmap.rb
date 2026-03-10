@@ -66,8 +66,10 @@ class Hashmap
   end
 
   def remove(key)
+    shrink_signal = @capacity / 2 if @capacity > 16
     hc = hash(key)
     return nil if !@map[hc]
+
     result = nil
     if !@map[hc].next_node && @map[hc].key == key
       result = @map[hc].value  
@@ -77,7 +79,11 @@ class Hashmap
       done = false
       until done
         done = true if current.next_node == nil
-        if current.next_node.key == key
+        if current.key == key
+          result = current.value
+          current = current.next_node
+          done = true
+        elsif current.next_node.key == key
           result = current.next_node.value
           current.next_node = current.next_node.next_node
           done = true
@@ -86,7 +92,10 @@ class Hashmap
         end
       end
     end
-    resize_hashmap(:shrink) if self.length < (@capacity * @load_factor)
+    
+    if shrink_signal
+      resize_hashmap(:shrink) if self.length < shrink_signal
+    end
     result
   end
 
