@@ -19,14 +19,14 @@ test.set('lion', 'golden')
 # p test.entries
 # test.length
 
-# test.has?('apple')
-# test.get('apple')
-# test.keys
-test.remove('jacket')
-test.set('beaver', 'demid')
-test.set('pumpkin', 'orange')
-test.set('me', 'crappy programmer')
-test.set('this hash', 'crappy code')
-test.length
+test.has?('apple')
+test.get('apple')
 test.keys
-puts test.capacity
+# test.remove('jacket')
+# test.set('beaver', 'demid')
+# test.set('pumpkin', 'orange')
+# test.set('me', 'crappy programmer')
+# test.set('this hash', 'crappy code')
+# test.length
+# test.keys
+# puts test.capacity

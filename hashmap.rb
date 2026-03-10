@@ -15,7 +15,7 @@ class Hashmap
     hash_code % @capacity
   end
 
-  def resize_hashmap(instruction) # Не работает
+  def resize_hashmap(instruction) 
     case instruction
     when :grow then @capacity = @capacity * 2
     when :shrink then @capacity = @capacity / 2
@@ -48,10 +48,57 @@ class Hashmap
     resize_hashmap(:grow) if self.length > (@capacity * @load_factor)
   end
 
-  def get(key)
+  def temp2_key_check(key, instruction)
+    result = nil
+    hc = hash(key)
+    if !@map[hc]
+      result = false if instruction == :has
+    else 
+      current = @map[hc]
+      until current.next_node == nil || current.key == key
+        current = current.next_node
+      end
+      if current.key == key
+        result = current.value if instruction == :get
+        result = true if instruction == :has
+      else
+        result = false if instruction == :has
+      end
+    end
+    result
+  end
+
+  def temp2_get(key)
+    return key_check(key, :get)
+  end
+
+  def temp2_has?(key)
+    return key_check(key, :has)
+  end
+
+  def find_node(key)
     hc = hash(key)
     return nil if !@map[hc]
-    return @map[hc].value if !@map[hc].next_node
+    current = @map[hc]
+    until current.next_node.nil? || current.key == key
+      current = current.next_node
+    end
+    current&.key == key ? current : nil
+  end
+
+  def get(key)
+    node = find_node(key)
+    node ? node.value : nil
+  end
+
+  def has?(key)
+    find_node(key) ? true : false
+  end
+
+
+  def temp_get(key)
+    hc = hash(key)
+    return nil if !@map[hc]
     current = @map[hc]
     until current.next_node == nil || current.key == key
       current = current.next_node
@@ -60,8 +107,15 @@ class Hashmap
     nil
   end
 
-  def has?(key) 
-    @map[hash(key)] ? true : false
+  def temp_has?(key) 
+    hc = hash(key)
+    return false if !@map[hc]
+    current = @map[hc]
+    until current.next_node == nil || current.key == key
+      current = current.next_node
+    end
+    return true if current.key == key
+    false
   end
 
   def remove(key)
@@ -76,7 +130,7 @@ class Hashmap
         done = true if current.next_node == nil
         if current.key == key
           result = current.value
-          current.next_node ? current = current.next_node : current = nil
+          current.next_node ? @map[hc] = current.next_node : current = nil
           done = true
         elsif current.next_node.key == key
           result = current.next_node.value
