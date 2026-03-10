@@ -78,38 +78,9 @@ class Hashmap
       if @map[hc].key == key
         result = @map[hc].value
         @map[hc] = @map[hc].next_node
-      elsif current.next_node.key == key
+      elsif current.next_node && current.next_node.key == key
         result = current.next_node.value
         current.next_node = current.next_node.next_node
-      else
-        current = current.next_node
-      end
-    end
-    
-    if shrink_signal
-      resize_hashmap(:shrink) if self.length < shrink_signal
-    end
-    result
-  end
-
-  def temp_remove(key) # Refactor dis shame bro...
-    shrink_signal = @capacity / 2 if @capacity > 16
-    hc = hash(key)
-    return nil if !@map[hc]
-
-    result = nil
-    current = @map[hc]
-    done = false
-    until done
-      done = true if current.next_node == nil
-      if current.key == key # Если этот - да, то вернуть значение
-        result = current.value
-        current.next_node ? @map[hc] = current.next_node : @map[hc] = nil
-        done = true
-      elsif current.next_node.key == key
-        result = current.next_node.value
-        current.next_node = current.next_node.next_node
-        done = true
       else
         current = current.next_node
       end
